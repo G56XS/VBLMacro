@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VBL Macro — Aurora Studio</title>
+<style>
+  :root{
+    --bg:#070912;
+    --panel:#0d1220;
+    --panel-2:#10162a;
+    --line:rgba(140,170,255,0.14);
+    --cyan:#5fe3ff;
+    --purple:#a78bfa;
+    --text:#e8ecff;
+    --muted:#8892b0;
+    font-size:16px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;
+    scroll-behavior:smooth;}
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(95,227,255,0.14), transparent 60%),
+      radial-gradient(ellipse 800px 600px at 90% 10%, rgba(167,139,250,0.12), transparent 60%),
+      var(--bg);
+  }
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+
+  header{position:sticky;top:0;z-index:10;backdrop-filter:blur(10px);
+    background:rgba(7,9,18,0.65);border-bottom:1px solid var(--line);}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:0.2px;font-size:17px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;
+    background:linear-gradient(135deg,var(--cyan),var(--purple));
+    box-shadow:0 0 12px var(--cyan);}
+  nav{display:flex;gap:28px;font-size:14px;color:var(--muted);}
+  nav a:hover{color:var(--text);}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:10px;
+    background:linear-gradient(135deg,rgba(95,227,255,0.16),rgba(167,139,250,0.16));
+    border:1px solid rgba(140,170,255,0.35);font-size:14px;font-weight:600;
+    transition:transform .15s ease, border-color .15s ease;
+  }
+  .btn:hover{transform:translateY(-1px);border-color:var(--cyan);}
+
+  .hero{padding:100px 0 70px;position:relative;}
+  .kicker{color:var(--cyan);font-size:13px;font-weight:600;letter-spacing:0.4px;margin-bottom:18px;}
+  h1{font-size:56px;line-height:1.06;margin:0 0 22px;font-weight:700;
+    letter-spacing:-1px;max-width:780px;}
+  h1 span{background:linear-gradient(120deg,var(--cyan),var(--purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;}
+  .lede{font-size:18px;color:var(--muted);max-width:560px;line-height:1.6;margin-bottom:36px;}
+  .cta-row{display:flex;gap:14px;flex-wrap:wrap;}
+  .btn.primary{background:linear-gradient(135deg,var(--cyan),var(--purple));
+    color:#080a14;border:none;padding:14px 24px;font-size:15px;}
+  .btn.primary:hover{filter:brightness(1.08);}
+
+  .chain-demo{margin-top:64px;border:1px solid var(--line);border-radius:16px;
+    background:linear-gradient(180deg,var(--panel),var(--panel-2));padding:28px 30px;
+    max-width:640px;}
+  .chain-demo .label{font-size:12px;color:var(--muted);margin-bottom:16px;}
+  .chain{display:flex;align-items:center;flex-wrap:wrap;gap:10px;font-size:14px;font-weight:600;}
+  .chain .step{padding:8px 14px;border-radius:8px;background:rgba(255,255,255,0.03);
+    border:1px solid var(--line);color:var(--muted);}
+  .chain .step.lit{color:var(--cyan);border-color:rgba(95,227,255,0.5);
+    box-shadow:0 0 16px rgba(95,227,255,0.25);}
+  .chain .arrow{color:var(--muted);opacity:0.5;}
+
+  section{padding:70px 0;border-top:1px solid var(--line);}
+  h2{font-size:30px;margin:0 0 12px;font-weight:700;letter-spacing:-0.4px;}
+  .sub{color:var(--muted);font-size:16px;max-width:560px;margin-bottom:44px;line-height:1.6;}
+
+  .modes{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+  .mode-card{border:1px solid var(--line);border-radius:16px;padding:28px;
+    background:linear-gradient(160deg,var(--panel),var(--panel-2));}
+  .mode-card h3{margin:0 0 6px;font-size:20px;}
+  .mode-card .tag{font-size:12px;color:var(--purple);margin-bottom:18px;display:block;}
+  .mode-card .seq{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;
+    color:var(--cyan);background:rgba(95,227,255,0.06);border:1px solid rgba(95,227,255,0.18);
+    border-radius:8px;padding:12px 14px;margin:10px 0;line-height:1.6;}
+  .mode-card .seq .off{color:var(--muted);display:block;margin-top:8px;}
+
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  .feat{border:1px solid var(--line);border-radius:14px;padding:24px;background:var(--panel);}
+  .feat h4{margin:0 0 8px;font-size:16px;}
+  .feat p{margin:0;color:var(--muted);font-size:14px;line-height:1.55;}
+
+  .overlay-preview{display:flex;gap:40px;align-items:center;flex-wrap:wrap;}
+  .fake-overlay{width:280px;border-radius:18px;padding:18px 20px;
+    background:linear-gradient(160deg,rgba(15,20,38,0.9),rgba(10,13,26,0.9));
+    border:1px solid rgba(140,170,255,0.25);box-shadow:0 0 40px rgba(95,227,255,0.08);
+    font-size:13px;}
+  .fake-overlay .row{display:flex;justify-content:space-between;padding:6px 0;
+    border-bottom:1px solid var(--line);color:var(--muted);}
+  .fake-overlay .row:last-child{border-bottom:none;}
+  .fake-overlay .row b{color:var(--text);font-weight:600;}
+  .fake-overlay .status{color:var(--cyan);}
+  .overlay-copy{max-width:340px;color:var(--muted);font-size:15px;line-height:1.65;}
+  .overlay-copy h3{color:var(--text);font-size:20px;margin:0 0 12px;}
+
+  .join{text-align:center;padding:90px 0;}
+  .join h2{font-size:34px;margin-bottom:14px;}
+  .join .sub{margin:0 auto 34px;}
+  .discord-btn{background:#5865F2;color:#fff;padding:16px 30px;border-radius:12px;
+    font-size:16px;font-weight:700;display:inline-flex;gap:10px;align-items:center;
+    box-shadow:0 0 30px rgba(88,101,242,0.35);}
+  .discord-btn:hover{filter:brightness(1.08);}
+  .fine{color:var(--muted);font-size:13px;margin-top:18px;}
+
+  footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted);font-size:13px;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+
+  @media(max-width:760px){
+    h1{font-size:38px;}
+    .modes,.grid3{grid-template-columns:1fr;}
+    nav{display:none;}
+    .overlay-preview{flex-direction:column;align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span> VBL Macro <span style="color:var(--muted);font-weight:400;">/ Aurora Studio</span></div>
+    <nav>
+      <a href="#modes">Modes</a>
+      <a href="#features">Features</a>
+      <a href="#overlay">Overlay</a>
+      <a href="#join">Get access</a>
+    </nav>
+    <a class="btn" href="#join">Join Discord</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="kicker">FIXED11 BUILD · LIVE</div>
+    <h1>One key. A perfect <span>combo chain</span>, every time.</h1>
+    <p class="lede">VBL Macro fires your Roblox combo sequence with clean, consistent timing — two switchable modes, per-profile shiftlock handling, and a floating overlay that tells you exactly what's about to happen.</p>
+    <div class="cta-row">
+      <a class="btn primary" href="#join">Get the macro on Discord</a>
+      <a class="btn" href="#modes">See how it works</a>
+    </div>
+
+    <div class="chain-demo">
+      <div class="label">LIVE COMBO CHAIN — AKARI · SHIFTLOCK ON</div>
+      <div class="chain">
+        <span class="step lit">SHIFTLOCK</span><span class="arrow">→</span>
+        <span class="step">DASH</span><span class="arrow">→</span>
+        <span class="step">SPACE</span><span class="arrow">→</span>
+        <span class="step">LEFT CLICK</span><span class="arrow">→</span>
+        <span class="step">SHIFTLOCK</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="modes">
+  <div class="wrap">
+    <h2>Two modes, four independent profiles</h2>
+    <p class="sub">AKARI and ENCHO each keep their own shiftlock state, timing, and override — so tuning one never touches the other.</p>
+    <div class="modes">
+      <div class="mode-card">
+        <span class="tag">MODE 01</span>
+        <h3>AKARI</h3>
+        <div class="seq">SHIFTLOCK → DASH → SPACE → LEFT CLICK → SHIFTLOCK
+          <span class="off">Shiftlock off: DASH → SPACE → LEFT CLICK</span>
+        </div>
+        <p style="color:var(--muted);font-size:14px;margin:14px 0 0;">Override key triggers an instant dash cancel — dash into an immediate jump — on whatever keybind you've set, plus an automatic right-click dash that fires alongside your normal click.</p>
+      </div>
+      <div class="mode-card">
+        <span class="tag">MODE 02</span>
+        <h3>ENCHO</h3>
+        <div class="seq">SHIFTLOCK → SPACE → LEFT CLICK → SHIFTLOCK
+          <span class="off">Shiftlock off: SPACE → LEFT CLICK</span>
+        </div>
+        <p style="color:var(--muted);font-size:14px;margin:14px 0 0;">Trimmed to four steps in the current build. Override runs a shiftlock → jump → shiftlock desync on its own key.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <h2>Built like a real dashboard, not a script window</h2>
+    <p class="sub">Everything runs through a live glass UI with telemetry, not a console you have to squint at.</p>
+    <div class="grid3">
+      <div class="feat"><h4>Roblox focus lock</h4><p>Input only fires while Roblox is the actual foreground window — checked by executable, window class, and title, so nothing leaks into other apps.</p></div>
+      <div class="feat"><h4>Typing Mode</h4><p>One key pauses every macro hotkey so you can chat normally, then resumes exactly where you left off.</p></div>
+      <div class="feat"><h4>Custom keybinds</h4><p>Rebind combo, override, shiftlock toggle, and mode switch — validated against conflicts before saving.</p></div>
+      <div class="feat"><h4>Per-profile timing</h4><p>Step delay, jump delay, and shiftlock-to-dash delay are tunable separately for all four profiles.</p></div>
+      <div class="feat"><h4>Session telemetry</h4><p>Live fire count, last action, uptime, and an 80-entry activity console for every mode switch and combo.</p></div>
+      <div class="feat"><h4>Dash cancel &amp; desync override</h4><p>One key runs AKARI's dash cancel or ENCHO's shiftlock-jump-shiftlock desync — instantly, on any bind you set.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="overlay">
+  <div class="wrap overlay-preview">
+    <div class="fake-overlay">
+      <div class="row"><span>Status</span><b class="status">LIVE</b></div>
+      <div class="row"><span>Mode</span><b>AKARI</b></div>
+      <div class="row"><span>Shiftlock</span><b>ON</b></div>
+      <div class="row"><span>Override</span><b>R</b></div>
+      <div class="row"><span>Ping</span><b class="status">24ms</b></div>
+    </div>
+    <div class="overlay-copy">
+      <h3>A floating overlay that stays out of your way</h3>
+      <p>Click-through, non-activating, and rounded natively on Windows — it sits on top of the game without ever stealing focus or eating a click. Glance at mode, shiftlock, override key, and ping without alt-tabbing.</p>
+    </div>
+  </div>
+</section>
+
+<section class="join" id="join">
+  <div class="wrap">
+    <h2>Access is Discord-only</h2>
+    <p class="sub">The current Fixed11 build, setup help, and updates are shared inside the server.</p>
+    <a class="discord-btn" href="https://discord.gg/wVckjpBsZ7" target="_blank" rel="noopener">
+      Join the Discord →
+    </a>
+    <div class="fine">You'll need this to receive the download and your access key.</div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap" style="display:flex;justify-content:space-between;width:100%;flex-wrap:wrap;gap:10px;">
+    <span>VBL Macro · Aurora Studio</span>
+    <span>For personal use with Roblox. Not affiliated with Roblox Corporation.</span>
+  </div>
+</footer>
+
+</body>
+</html>
